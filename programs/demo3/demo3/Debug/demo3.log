@@ -1,0 +1,9 @@
+﻿  Scenery.cpp
+c:\users\kasem\desktop\graphics\cscd470\programs\demo3\demo3\scenery.cpp(308): error C2664: 'unsigned int loadTexture(char *)': cannot convert argument 1 from 'const char [9]' to 'char *'
+  c:\users\kasem\desktop\graphics\cscd470\programs\demo3\demo3\scenery.cpp(308): note: Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+c:\users\kasem\desktop\graphics\cscd470\programs\demo3\demo3\scenery.cpp(309): error C2664: 'unsigned int loadTexture(char *)': cannot convert argument 1 from 'const char [8]' to 'char *'
+  c:\users\kasem\desktop\graphics\cscd470\programs\demo3\demo3\scenery.cpp(309): note: Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+c:\users\kasem\desktop\graphics\cscd470\programs\demo3\demo3\scenery.cpp(310): error C2664: 'unsigned int loadTexture(char *)': cannot convert argument 1 from 'const char [9]' to 'char *'
+  c:\users\kasem\desktop\graphics\cscd470\programs\demo3\demo3\scenery.cpp(310): note: Conversion from string literal loses const qualifier (see /Zc:strictStrings)
+c:\users\kasem\desktop\graphics\cscd470\programs\demo3\demo3\scenery.cpp(311): error C2664: 'unsigned int loadTexture(char *)': cannot convert argument 1 from 'const char [10]' to 'char *'
+  c:\users\kasem\desktop\graphics\cscd470\programs\demo3\demo3\scenery.cpp(311): note: Conversion from string literal loses const qualifier (see /Zc:strictStrings)

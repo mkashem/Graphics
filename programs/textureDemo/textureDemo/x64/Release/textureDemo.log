@@ -1,0 +1,13 @@
+﻿TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilEnable
+TexturedPlane.obj : error LNK2001: unresolved external symbol "void __cdecl createPlane(void)" (?createPlane@@YAXXZ)
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilLoadImage
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilDeleteImages
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilConvertImage
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilOriginFunc
+TexturedPlane.obj : error LNK2001: unresolved external symbol "void __cdecl renderPlane(void)" (?renderPlane@@YAXXZ)
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilInit
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilBindImage
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilGetData
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilGetInteger
+TexturedPlane.obj : error LNK2001: unresolved external symbol __imp_ilGenImages
+C:\Users\kasem\Desktop\graphics\cscd470\programs\textureDemo\x64\Release\textureDemo.exe : fatal error LNK1120: 12 unresolved externals

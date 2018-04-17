@@ -1,0 +1,3 @@
+﻿TexturedPlane.obj : error LNK2001: unresolved external symbol "void __cdecl createPlane(void)" (?createPlane@@YAXXZ)
+TexturedPlane.obj : error LNK2001: unresolved external symbol "void __cdecl renderPlane(void)" (?renderPlane@@YAXXZ)
+C:\Users\kasem\Desktop\graphics\cscd470\programs\textureDemo\Release\textureDemo.exe : fatal error LNK1120: 2 unresolved externals

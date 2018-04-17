@@ -1,0 +1,35 @@
+﻿  hexagon.cpp
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\hexagon.cpp(13): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\hexagon.cpp(13): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+  main.cpp
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(20): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(20): error C2146: syntax error: missing ';' before identifier 'view'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(21): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(21): error C2086: 'int mat4': redefinition
+  c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(20): note: see declaration of 'mat4'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(21): error C2146: syntax error: missing ';' before identifier 'model'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(22): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(22): error C2086: 'int mat4': redefinition
+  c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(20): note: see declaration of 'mat4'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(22): error C2146: syntax error: missing ';' before identifier 'projection'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(23): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(23): error C2086: 'int mat4': redefinition
+  c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(20): note: see declaration of 'mat4'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(23): error C2146: syntax error: missing ';' before identifier 'model_view'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(24): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(24): error C2086: 'int mat4': redefinition
+  c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(20): note: see declaration of 'mat4'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(24): error C2146: syntax error: missing ';' before identifier 'transformation_matrix'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(25): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(25): error C2086: 'int mat4': redefinition
+  c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(20): note: see declaration of 'mat4'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(25): error C2146: syntax error: missing ';' before identifier 'mvp'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(26): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(26): error C2146: syntax error: missing ';' before identifier 'normalmatrix'
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(144): error C2065: 'view': undeclared identifier
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(145): error C2065: 'projection': undeclared identifier
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\main.cpp(145): error C2064: term does not evaluate to a function taking 1 arguments
+  Triangle.cpp
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\triangle.cpp(13): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+c:\users\kasem\desktop\graphics\cscd470\programs\470project\470project\triangle.cpp(13): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+  Generating Code...

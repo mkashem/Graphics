@@ -1,0 +1,21 @@
+﻿  multiobjects.cpp
+multiobjects.obj : error LNK2019: unresolved external symbol __imp__glewInit@0 referenced in function _main
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewBindBuffer
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewBufferData
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewGenBuffers
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewAttachShader
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewCompileShader
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewCreateProgram
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewCreateShader
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewEnableVertexAttribArray
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewGetProgramInfoLog
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewGetProgramiv
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewGetShaderInfoLog
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewGetShaderiv
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewLinkProgram
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewShaderSource
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewUseProgram
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewVertexAttribPointer
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewBindVertexArray
+multiobjects.obj : error LNK2001: unresolved external symbol __imp____glewGenVertexArrays
+C:\Users\kasem\Desktop\graphics\cscd470\programs\multiobject\Debug\multiobject.exe : fatal error LNK1120: 19 unresolved externals
