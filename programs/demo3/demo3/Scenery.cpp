@@ -305,10 +305,10 @@ void Initialize(void)
 	glUniform1f(glGetUniformLocation(progTexture, "Material.Shininess"), shininess);
 	
 	glUniform1i(glGetUniformLocation(progTexture, "Tex1"), 0);
-	planeTexID = loadTexture("home.jpg");   // call texture function 
-	planeTexID_2 = loadTexture("top.jpg");
-	planeTexID_3 = loadTexture("wood.jpg");
-	planeTexID_4 = loadTexture("white.jpg");
+	planeTexID = loadTexture((char*)"home.jpg");   // call texture function 
+	planeTexID_2 = loadTexture((char*)"top.jpg");
+	planeTexID_3 = loadTexture((char*)"wood.jpg");
+	planeTexID_4 = loadTexture((char*)"white.jpg");
 	glActiveTexture(GL_TEXTURE0);             // active texture
 											  // bind texture 
 
