@@ -1,8 +1,2 @@
-﻿  cone.cpp
-c:\users\kasem\documents\github\graphics\programs\firstassingment\firstassingment\cone.cpp(47): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  main.cpp
-  Triangle.cpp
-c:\users\kasem\documents\github\graphics\programs\firstassingment\firstassingment\triangle.cpp(13): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-c:\users\kasem\documents\github\graphics\programs\firstassingment\firstassingment\triangle.cpp(13): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
-  Generating Code...
+﻿  main.cpp
   firstAssingment.vcxproj -> C:\Users\kasem\Documents\GitHub\Graphics\programs\firstAssingment\Debug\firstAssingment.exe

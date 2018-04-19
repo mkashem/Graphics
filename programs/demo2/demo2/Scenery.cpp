@@ -1,18 +1,20 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
 
 #include <stdlib.h>
 #include <iostream>
 #include <math.h>
-#include <IL/il.h>
-#include <IL/ilu.h>
-#include <IL/ilut.h>
+
 #include "grass.h"
 #include "ground.h"
 #include "box.h"
 #include "pyramid.h"
 #include "cone.h"
-#include "fan.h"
+#include "plane.h"
+#include "Plane2.h"
 
 #define GLM_FORCE_RADIANS 
 
@@ -21,22 +23,20 @@
 
 using namespace glm;
 
+GLuint boxTexID;
+GLuint pyramidTexID;
+
+bool speed = false;
+
+
 void Initialize(void);
 void Display(void);
 
-mat4 view;
-mat4 model;
-mat4 projection;
-mat4 model_view;
-mat4 transformation_matrix;
-mat4 mvp;
-mat3 normalmatrix;
+
 
 GLuint prog;
 GLuint render_prog;
-GLuint progTexture;
-float angle =0.0;
-GLboolean speed_up;
+
 
 typedef struct {
 	GLenum       type;
@@ -45,7 +45,8 @@ typedef struct {
 } ShaderInfo;
 
 
-
+float angle = 0.0;
+float angle2 = 0.0;
 
 vec4 light_position(20.0, 40.0, 60.0, 0.0);  // directional light source
 
@@ -63,13 +64,8 @@ GLuint view_matrix_loc;
 GLuint projection_matrix_loc;
 float aspect;
 
-GLuint planeTexID;
-GLuint planeTexID_3;
-GLuint planeTexID_2;
-GLuint planeTexID_4;
-unsigned int loadTexture(char* filename);
 //----------------------------------------------------------------------------
-void setMatrices();
+
 const GLchar* ReadShader(const char* filename) {
 #ifdef WIN32
 	FILE* infile;
@@ -179,69 +175,17 @@ GLuint LoadShaders(ShaderInfo* shaders){
 }
 ////////////////////////////////////////////////////////////////////////////////////////
 /********************************************************************************/
-/************************************/
-unsigned int loadTexture(char* filename) {
-
-	ILboolean success;
-	unsigned int imageID;
-
-
-	// Load Texture Map
-	ilGenImages(1, &imageID);
-
-	ilBindImage(imageID); /* Binding of DevIL image name */
-	ilEnable(IL_ORIGIN_SET);
-	ilOriginFunc(IL_ORIGIN_UPPER_LEFT);
-	success = ilLoadImage((ILstring)filename);
-
-	if (!success) {
-		printf("Couldn't load the following texture file: %s", filename);
-		// The operation was not sucessfull hence free image and texture 
-		ilDeleteImages(1, &imageID);
-		return 0;
-	}
-
-	// add information to the log
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-	GLuint tid;
-	glGenTextures(1, &tid);
-	glBindTexture(GL_TEXTURE_2D, tid);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-
-	float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
-
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	/* Because we have already copied image data into texture data
-	we can release memory used by image. */
-	ilDeleteImages(1, &imageID);
-	return tid;
-}
-
 
 void Reshape(int width, int height) {
 
 	glViewport(0, 0, width, height);
 	aspect = float(width) / float(height);
 }
-/************************************** https://evals.compsci.ewu.edu***************************************/
+/*****************************************************************************/
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
-/**************************/
+
 
 void Initialize(void)
 {
@@ -260,8 +204,6 @@ void Initialize(void)
 	
 	createGrass();
 
-	
-
 
 	ShaderInfo common_shaders[] = { { GL_VERTEX_SHADER, "common.vs" },
 	                                { GL_FRAGMENT_SHADER, "common.fs" },
@@ -270,53 +212,21 @@ void Initialize(void)
 	prog = LoadShaders(common_shaders);
 
 	
-	
+	glUseProgram(prog);
+
 
 	createGround();
-	glUseProgram(prog);
-	createCone();
+
+	
+	glClearColor(0.5f, 0.75f, 0.85f, 1.0f);  // sky color
+
 
 	createBox();
 	createPyramid();
-	createFan();
-	view=glm::lookAt(glm::vec3(0.0f, 40.0f, 200.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	projection = mat4(1.0f);
+	createCone();
+	createPlane();
+	createPlane2();
 
-	ShaderInfo common_texture[] = { { GL_VERTEX_SHADER, "texture.vs" },
-	{ GL_FRAGMENT_SHADER, "texture.fs" },
-	{ GL_NONE, NULL } };
-
-	progTexture = LoadShaders(common_texture);
-	glUseProgram(progTexture);
-	
-	vec3 light_intensity(1.0f, 1.0f, 1.0f);
-	vec4 light_position(10.0f, 10.0f, 10.0f, 1.0f);
-	vec3 material_ambient(0.5, 0.5, 0.5);
-	vec3 material_diffuse(0.9, 0.9, 0.9);
-	vec3 material_specular(1.0, 1.0, 1.0);
-
-	GLfloat shininess = 100.0f;
-
-	glUniform3fv(glGetUniformLocation(progTexture, "Light.Intensity"), 1, (GLfloat*)&light_intensity);
-	glUniform4fv(glGetUniformLocation(progTexture, "Light.Position"), 1, (GLfloat*)&light_position);
-	glUniform3fv(glGetUniformLocation(progTexture, "Material.Ka"), 1, (GLfloat*)&material_ambient);
-	glUniform3fv(glGetUniformLocation(progTexture, "Material.Kd"), 1, (GLfloat*)&material_diffuse[0]);
-	glUniform3fv(glGetUniformLocation(progTexture, "Material.Ks"), 1, (GLfloat*)&material_specular[0]);
-	glUniform1f(glGetUniformLocation(progTexture, "Material.Shininess"), shininess);
-	
-	glUniform1i(glGetUniformLocation(progTexture, "Tex1"), 0);
-	planeTexID = loadTexture((char*)"home.jpg");   // call texture function 
-	planeTexID_2 = loadTexture((char*)"top.jpg");
-	planeTexID_3 = loadTexture((char*)"wood.jpg");
-	planeTexID_4 = loadTexture((char*)"white.jpg");
-	glActiveTexture(GL_TEXTURE0);             // active texture
-											  // bind texture 
-
-	//glClearColor(1.0, 1.0, 1.0, 1.0);
-	
-	
-	
-	glClearColor(0.5f, 0.75f, 0.85f, 1.0f);  // sky color
 }
 
 /**************************************************************************************************************/
@@ -326,7 +236,7 @@ void Display(void){
 	glEnable(GL_DEPTH_TEST);
 
 	glUseProgram(render_prog);
-	
+
 	vec4 light_ambient(0.5, 0.5, 1.0, 1.0);
 	vec4 light_diffuse(0.5, 0.5, 1.0, 1.0);
 	vec4 light_specular(1.0, 1.0, 1.0, 1.0);
@@ -389,238 +299,397 @@ void Display(void){
 	
 	
 	
-	
+
 	renderGround();
 
-	
-	/********************************* first tree start *****************************************************************/
+	mat4 scale_matrix = scale(mat4(1.0f), vec3(50.0f, 40.0f, 40.0f));
+	mat4 translateMat = translate(mat4(1.0f), vec3(-60.0f, 10.0f, 0.0f));
+	mat4 rotateMat = rotate(mat4(1.0f), radians(35.0f), vec3(0.0, 1.0f, 0.0f));
 
-	
+	model_matrix = translateMat*scale_matrix*rotateMat;
 
-	model_matrix = mat4(1.0f);
-	mat4 cone_scale, cone_translate;
-	cone_scale = glm::scale(glm::mat4(1.0f), glm::vec3(20.0f, 25.0f, 20.0f));
-	cone_translate = glm::translate(glm::mat4(1.0f), glm::vec3(140.0f, 50.0f, -50.0));
-	model_matrix = cone_translate*cone_scale;
 	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
-	material_ambient = vec4(0.0, 0.9, 0.104, 1.0);
-	material_diffuse = vec4(0.0, 1.64, 0.104, 1.0);
-	material_specular = vec4(0.1, 0.25, 0.25, 1.0);
+
+	material_ambient = vec4(1.0, 0.35, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
 	ambient_product = light_ambient*material_ambient;
 	diffuse_product = light_diffuse*material_diffuse;
 	specular_product = light_specular*material_specular;
-	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "LightPosition"), 1, (GLfloat*)&light_position[0]);
-	glUniform1f(glGetUniformLocation(prog, "Shininess"), material_shininess);
-	renderCone();
 
-	model_matrix = mat4(1.0f);
-	mat4 cone2_scale, cone2_translate;
-	cone2_scale = glm::scale(glm::mat4(1.0f), glm::vec3(15.0f, 35.0f, 15.0f));
-	cone2_translate = glm::translate(glm::mat4(1.0f), glm::vec3(140.0f, 00.0f, -50.0));
-	model_matrix = cone2_translate*cone2_scale;
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderBox();//house
+
+	//**********************************************//
+	scale_matrix = scale(mat4(1.0f), vec3(10.0f, 20.0f, 10.0f));
+	translateMat = translate(mat4(1.0f), vec3(-40.0f, 10.0f, 10.0f));
+	rotateMat = rotate(mat4(1.0f), radians(35.0f), vec3(0.0, 1.0f, 0.0f));
+
+	model_matrix = translateMat*scale_matrix*rotateMat;
+
 	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
-	material_ambient = vec4(.74, 0.64, 0.104, 1.0);
-	material_diffuse = vec4(0.74, 0.64, 0.104, 1.0);
-	material_specular = vec4(0.1, 0.25, 0.25, 1.0);
+
+	material_ambient = vec4(0.45, 0.35, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
 	ambient_product = light_ambient*material_ambient;
 	diffuse_product = light_diffuse*material_diffuse;
 	specular_product = light_specular*material_specular;
-	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "LightPosition"), 1, (GLfloat*)&light_position[0]);
-	glUniform1f(glGetUniformLocation(prog, "Shininess"), material_shininess);
 
-	renderCone();
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
 
 
-	/********************* first tree end *************************************/
-	
+	renderBox();//door
+	//***********************************************//
 
-	/********************************* second tree start *****************************************************************/
-	
-	
+	scale_matrix = scale(mat4(1.0f), vec3(10.0f, 10.0f, 10.0f));
+	translateMat = translate(mat4(1.0f), vec3(-55.0f, 15.0f, 18.0f));
+	rotateMat = rotate(mat4(1.0f), radians(35.0f), vec3(0.0, 1.0f, 0.0f));
 
-	model_matrix = mat4(1.0f);
-	mat4 cone4_scale, cone4_translate;
-	cone4_scale = glm::scale(glm::mat4(1.0f), glm::vec3(20.0f, 35.0f, 20.0f));    //top tree
-	cone4_translate = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, 70.0f, -70.0));
-	model_matrix = cone4_translate*cone4_scale;
+	model_matrix = translateMat*scale_matrix*rotateMat;
+
 	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
-	material_ambient = vec4(0.0, 0.9, 0.104, 1.0);
-	material_diffuse = vec4(0.0, 1.64, 0.104, 1.0);
-	material_specular = vec4(0.1, 0.25, 0.25, 1.0);
+
+	material_ambient = vec4(0.5f, 0.75f, 0.85f, 1.0f);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
 	ambient_product = light_ambient*material_ambient;
 	diffuse_product = light_diffuse*material_diffuse;
 	specular_product = light_specular*material_specular;
-	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "LightPosition"), 1, (GLfloat*)&light_position[0]);
-	glUniform1f(glGetUniformLocation(prog, "Shininess"), material_shininess);
-	renderCone();
 
-	
-	model_matrix = mat4(1.0f);
-	mat4 cone3_scale, cone3_translate;
-	cone3_scale = glm::scale(glm::mat4(1.0f), glm::vec3(15.0f, 45.0f, 15.0f)); //bottom tree
-	cone3_translate = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, 0.0f, -70.0));
-	model_matrix = cone3_translate*cone3_scale;
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderBox();//window
+				//***********************************************//
+
+	scale_matrix = scale(mat4(1.0f), vec3(30.0f, 15.0f, 30.0f));
+	translateMat = translate(mat4(1.0f), vec3(-60.0f, 45.0f, 0.0f));
+	rotateMat = rotate(mat4(1.0f), radians(35.0f), vec3(0.0, 1.0f, 0.0f));
+
+	model_matrix = translateMat*scale_matrix*rotateMat;
+
 	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
-	material_ambient = vec4(.74, 0.64, 0.104, 1.0);
-	material_diffuse = vec4(0.74, 0.64, 0.104, 1.0);
-	material_specular = vec4(0.1, 0.25, 0.25, 1.0);
+
+	material_ambient = vec4(0.45, 0.35, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
 	ambient_product = light_ambient*material_ambient;
 	diffuse_product = light_diffuse*material_diffuse;
 	specular_product = light_specular*material_specular;
-	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product[0]);
-	glUniform4fv(glGetUniformLocation(prog, "LightPosition"), 1, (GLfloat*)&light_position[0]);
-	glUniform1f(glGetUniformLocation(prog, "Shininess"), material_shininess); 
-	renderCone();
-	
-	/********************* first tree end *************************************/
-/*     Bellow this line all objects used progTexture sheder           */
 
-	glUseProgram(progTexture);
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderPyramid();//roof
+
+	//***********************************************//
+
+	scale_matrix = scale(mat4(1.0f), vec3(5.0f, 10.0f, 10.0f));
+	translateMat = translate(mat4(1.0f), vec3(10.0f, 10.0f, 0.0f));
 	
-	model = mat4(1.0f);
-	glBindTexture(GL_TEXTURE_2D, planeTexID);
-	model = mat4(1.0f);
-	mat4 box_scale, box_translate;
-	box_scale = glm::scale(glm::mat4(1.0f), glm::vec3(200.5f, 70.5f, 200.50));
-	box_translate = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 18.0f, -10.0f));
-	model = box_translate*box_scale;
-	setMatrices();
-	renderBox();
-	model = mat4(1.0f);
-	mat4 pyra_scale, pyra_translate;
-	pyra_scale = glm::scale(glm::mat4(1.0f), glm::vec3(40.f, 10.5f, 40.0));
-	pyra_translate = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 40.0f, 0.0f));
-	model = pyra_translate*pyra_scale;
-	setMatrices();
-	glBindTexture(GL_TEXTURE_2D, planeTexID_2);
-	renderPyramid(); 
-	/* *******************/
-	if (speed_up) {
-		angle += 10;
+	model_matrix = translateMat*scale_matrix;
+
+	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+	material_ambient = vec4(0.45, 0.35, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+	ambient_product = light_ambient*material_ambient;
+	diffuse_product = light_diffuse*material_diffuse;
+	specular_product = light_specular*material_specular;
+
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderCone();//trunk
+
+	//*******************************//
+
+	scale_matrix = scale(mat4(1.0f), vec3(20.0f, 20.0f, 20.0f));
+	translateMat = translate(mat4(1.0f), vec3(10.0f, 30.0f, 0.0f));
+
+	model_matrix = translateMat*scale_matrix;
+
+	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+	material_ambient = vec4(0.0, 1.0, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+	ambient_product = light_ambient*material_ambient;
+	diffuse_product = light_diffuse*material_diffuse;
+	specular_product = light_specular*material_specular;
+
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderCone();//tree
+
+				 //*******************************//
+
+				 //***********************************************//
+
+	scale_matrix = scale(mat4(1.0f), vec3(5.0f, 10.0f, 10.0f));
+	translateMat = translate(mat4(1.0f), vec3(-90.0f, 10.0f, 30.0f));
+
+	model_matrix = translateMat*scale_matrix;
+
+	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+	material_ambient = vec4(0.45, 0.35, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+	ambient_product = light_ambient*material_ambient;
+	diffuse_product = light_diffuse*material_diffuse;
+	specular_product = light_specular*material_specular;
+
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderCone();//trunk
+
+				 //*******************************//
+
+	scale_matrix = scale(mat4(1.0f), vec3(20.0f, 20.0f, 20.0f));
+	translateMat = translate(mat4(1.0f), vec3(-90.0f, 30.0f, 30.0f));
+
+	model_matrix = translateMat*scale_matrix;
+
+	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+	material_ambient = vec4(0.0, 1.0, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+	ambient_product = light_ambient*material_ambient;
+	diffuse_product = light_diffuse*material_diffuse;
+	specular_product = light_specular*material_specular;
+
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderCone();//tree
+
+				 //*******************************//
+
+	scale_matrix = scale(mat4(1.0f), vec3(30.0f, 100.0f, 30.0f));
+	translateMat = translate(mat4(1.0f), vec3(80.0f, 10.0f, -25.0f));
+
+
+	model_matrix = translateMat*scale_matrix;
+
+	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+	material_ambient = vec4(1.0, 0.35, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+	ambient_product = light_ambient*material_ambient;
+	diffuse_product = light_diffuse*material_diffuse;
+	specular_product = light_specular*material_specular;
+
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderBox();//windmill
+
+	//***************************************//
+
+	scale_matrix = scale(mat4(1.0f), vec3(20.0f, 10.0f, 20.0f));
+	translateMat = translate(mat4(1.0f), vec3(80.0f, 70.0f, -25.0f));
+
+
+	model_matrix = translateMat*scale_matrix;
+
+	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+	material_ambient = vec4(0.45, 0.35, 0.0, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+	ambient_product = light_ambient*material_ambient;
+	diffuse_product = light_diffuse*material_diffuse;
+	specular_product = light_specular*material_specular;
+
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderPyramid();//windmill roof
+
+
+	//****************************************************//
+	if (speed)
+	{
+		scale_matrix = scale(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f));
+		translateMat = translate(mat4(1.0f), vec3(67.0f, 50.0f, 25.0f));
+		rotateMat = rotate(mat4(1.0f), radians(angle), vec3(0.0, 0.0f, 1.0f));
+
+
+		model_matrix = translateMat*scale_matrix*rotateMat;
+
+		glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+		material_ambient = vec4(0.9, 0.9, 0.3, 1.0);
+		material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+		material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+		ambient_product = light_ambient*material_ambient;
+		diffuse_product = light_diffuse*material_diffuse;
+		specular_product = light_specular*material_specular;
+
+		glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+		glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+		glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+		renderPlane();
+
+		//****************************************************//
+
+		scale_matrix = scale(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f));
+		translateMat = translate(mat4(1.0f), vec3(67.0f, 50.0f, 25.0f));
+		rotateMat = rotate(mat4(1.0f), radians(angle), vec3(0.0, 0.0f, 1.0f));
+
+
+		model_matrix = translateMat*scale_matrix*rotateMat;
+
+		glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+		material_ambient = vec4(0.9, 0.9, 0.3, 1.0);
+		material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+		material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+		ambient_product = light_ambient*material_ambient;
+		diffuse_product = light_diffuse*material_diffuse;
+		specular_product = light_specular*material_specular;
+
+		glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+		glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+		glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+		renderPlane2();
 	}
-	/* ********************/
-	model = mat4(1.0f);
-	mat4 fan_scale, fan_rotate, fan_translate;
-	
-	fan_rotate = glm::rotate(mat4(1.0f), radians(0.0f- angle), vec3(0.0f, 0.0f, 1.0f));
-	fan_translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 70.0f, -50.0f));
-	//model = fan_scale*fan_translate*fan_rotate;
-	model = fan_translate*fan_rotate;
-	setMatrices();
-	glBindTexture(GL_TEXTURE_2D, planeTexID_3);
-	renderFan();
-	
-	model = mat4(1.0f);
-	mat4 fan_scale2, fan_rotate2, fan_translate2;
-	
-	fan_rotate2 = glm::rotate(mat4(1.0f), radians(90.0f-angle), vec3(0.0f, 0.0f, 1.0f));
-	fan_translate2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 70.0f, -50.0f));
-	
-	model = fan_translate2*fan_rotate2;
-	setMatrices();
-	glBindTexture(GL_TEXTURE_2D, planeTexID_3);
-	renderFan();
-
-	model = mat4(1.0f);
-	mat4 fan_scale3, fan_rotate3, fan_translate3;
-	
-	fan_rotate3 = glm::rotate(mat4(1.0f), radians(180.0f- angle), vec3(0.0f, 0.0f, 1.0f));
-	fan_translate3 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 70.0f, -50.0f));
-	model = fan_translate3*fan_rotate3;
-	setMatrices();
-	glBindTexture(GL_TEXTURE_2D, planeTexID_3);
-	renderFan();
-
-	model = mat4(1.0f);
-	mat4 fan_scale4, fan_rotate4, fan_translate4;
-	
-	fan_rotate4 = glm::rotate(mat4(1.0f), radians(270.0f- angle), vec3(0.0f, 0.0f, 1.0f));
-	fan_translate4 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 70.0f, -50.0f));
-	//model = fan_scale2*fan_rotate2*fan_translate2;
-	model = fan_translate4*fan_rotate4;
-	setMatrices();
-	glBindTexture(GL_TEXTURE_2D, planeTexID_3);
-	renderFan();
-
-	
+	else if (!speed)
+	{
+		scale_matrix = scale(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f));
+	translateMat = translate(mat4(1.0f), vec3(67.0f, 50.0f, 25.0f));
+	rotateMat = rotate(mat4(1.0f), radians(angle2), vec3(0.0, 0.0f, 1.0f));
 
 
-	model = mat4(1.0f);
-	glBindTexture(GL_TEXTURE_2D, planeTexID_3);
-	model = mat4(1.0f);
-	mat4 box_scale2, box_translate2;
-	box_scale2 = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 480.0f, 100.0f));;
-	box_translate2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 20.0f, -100.0f));
-	model = box_translate2*box_scale2;
-	setMatrices();
-	renderBox();
-	
+	model_matrix = translateMat*scale_matrix*rotateMat;
+
+	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+	material_ambient = vec4(0.9, 0.9, 0.3, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+	ambient_product = light_ambient*material_ambient;
+	diffuse_product = light_diffuse*material_diffuse;
+	specular_product = light_specular*material_specular;
+
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderPlane();
+
+	//****************************************************//
+
+	scale_matrix = scale(mat4(1.0f), vec3(5.0f, 5.0f, 0.0f));
+	translateMat = translate(mat4(1.0f), vec3(67.0f, 50.0f, 25.0f));
+	rotateMat = rotate(mat4(1.0f), radians(angle2), vec3(0.0, 0.0f, 1.0f));
+
+
+	model_matrix = translateMat*scale_matrix*rotateMat;
+
+	glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
+	material_ambient = vec4(0.9, 0.9, 0.3, 1.0);
+	material_diffuse = vec4(0.25, 0.25, 0.25, 1.0);
+	material_specular = vec4(0.25, 0.25, 0.25, 1.0);
+
+	ambient_product = light_ambient*material_ambient;
+	diffuse_product = light_diffuse*material_diffuse;
+	specular_product = light_specular*material_specular;
+
+	glUniform4fv(glGetUniformLocation(prog, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(prog, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(prog, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+
+
+	renderPlane2();
+
+	}
+
+
 	glutSwapBuffers();
-	
 
 }
-
-
-
-void Rotate(int n)  //the "glutTimerFunc"
-{
-	// implement this function!
-	
-	
-		angle += 5.0f;
-		glutPostRedisplay();
-		glutTimerFunc(100, Rotate, n);
-		//glutReshapeFunc(Reshape);
-	
-
-
-}
-
-void setMatrices() {
-
-	normalmatrix = mat3(1.0f);
-	mvp = mat4(1.0f);
-	model_view = view*model;
-	normalmatrix = mat3(vec3(model_view[0]), vec3(model_view[1]), vec3(model_view[2]));
-	projection = perspective(radians(60.0f), aspect, 1.0f, 3000.0f);
-	mvp = projection*model_view;
-
-	glUniformMatrix4fv(glGetUniformLocation(progTexture, "ModelViewMatrix"), 1, GL_FALSE, (GLfloat*)&model_view[0]);
-	glUniformMatrix3fv(glGetUniformLocation(progTexture, "NormalMatrix"), 1, GL_FALSE, (GLfloat*)&normalmatrix[0]);
-	glUniformMatrix4fv(glGetUniformLocation(progTexture, "MVP"), 1, GL_FALSE, (GLfloat*)&mvp[0]);
-	glUniformMatrix4fv(glGetUniformLocation(progTexture, "ProjectionMatrix"), 1, GL_FALSE, (GLfloat*)&projection[0]);
-}
-
-/************************************************************************/
+/**************************************************************************************************************/
 void keyboard(unsigned char key, int x, int y) {
-
 	switch (key) {
 	case 'q':case 'Q':
 		exit(EXIT_SUCCESS);
 		break;
-	
-	case 's':case 'S':
-		speed_up = !speed_up;
-		
 
+	case 's':
+		speed = !speed;
 		break;
-
 	}
 	glutPostRedisplay();
 }
+/*************************************************************************/
+void Rotate(int n)  //the "glutTimerFunc"
+{
+		
+	switch (n) {
+	case 1:
+		angle += 5;
+		glutPostRedisplay();
+		glutTimerFunc(100, Rotate, 1);
+		break;
+	case 2:
+		angle2 += 5;
+		glutPostRedisplay();
+		glutTimerFunc(25, Rotate, 2);
+		break;
+	}
 
+}
 
+/************************************************************************/
 int main(int argc, char** argv) {
 
 	glutInit(&argc, argv);
@@ -632,15 +701,15 @@ int main(int argc, char** argv) {
 	if (glewInit()) {
 		printf("Unable to initialize GLEW ... exiting\n");
 	}
-	ilInit();
+
 	Initialize();
 	printf("%s\n", glGetString(GL_VERSION));
 	glutDisplayFunc(Display);
-	glutTimerFunc(100, Rotate, 0);
+	glutKeyboardFunc(keyboard);
 	glutReshapeFunc(Reshape);
-	glutKeyboardFunc(keyboard);// for keyboard call back function
+	glutTimerFunc(100, Rotate, 1);
+	glutTimerFunc(25, Rotate, 2);
 	glutMainLoop();
-	return 0;
 }
 
 /*****/

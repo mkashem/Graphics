@@ -1,14 +1,18 @@
-#pragma once
 #include <stdio.h>
 #include <GL/glew.h>
+
+#define GLM_FORCE_RADIANS 
+
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+using namespace glm;
+
+#define NumConePoints  36
+#define NumTriangles   36
+#define NumIndices     3*NumTriangles
+
 
 void createCone();
 void renderCone();
 
-#define NumConePoints  18
-#define NumTriangles   18
-#define NumIndices     3*NumTriangles
-
-extern	unsigned  cone_vao;
-extern	unsigned   cone_vbo;
-extern	unsigned   cone_ebo;
+extern	unsigned int cone_vao;

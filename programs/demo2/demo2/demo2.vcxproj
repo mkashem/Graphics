@@ -121,9 +121,10 @@
   <ItemGroup>
     <ClCompile Include="box.cpp" />
     <ClCompile Include="cone.cpp" />
-    <ClCompile Include="fan.cpp" />
     <ClCompile Include="grass.cpp" />
     <ClCompile Include="ground.cpp" />
+    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Plane2.cpp" />
     <ClCompile Include="pyramid.cpp" />
     <ClCompile Include="Scenery.cpp" />
   </ItemGroup>
@@ -133,6 +134,8 @@
     <ClInclude Include="fan.h" />
     <ClInclude Include="grass.h" />
     <ClInclude Include="ground.h" />
+    <ClInclude Include="Plane.h" />
+    <ClInclude Include="Plane2.h" />
     <ClInclude Include="pyramid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

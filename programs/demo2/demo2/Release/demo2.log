@@ -1,16 +1,15 @@
 ﻿  box.cpp
-c:\users\kasem\documents\github\graphics\programs\demo2\demo2\box.cpp(34): warning C4838: conversion from 'double' to 'const GLfloat' requires a narrowing conversion
-c:\users\kasem\documents\github\graphics\programs\demo2\demo2\box.cpp(34): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
   cone.cpp
-c:\users\kasem\documents\github\graphics\programs\demo2\demo2\cone.cpp(47): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  fan.cpp
+c:\users\kasem\documents\github\graphics\programs\demo2\demo2\cone.cpp(41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kasem\documents\github\graphics\programs\demo2\demo2\cone.cpp(52): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kasem\documents\github\graphics\programs\demo2\demo2\cone.cpp(53): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   grass.cpp
   ground.cpp
+  Plane.cpp
+  Plane2.cpp
   pyramid.cpp
   Scenery.cpp
   Generating code
-  125 of 128 functions (97.7%) were compiled, the rest were copied from previous compilation.
-    17 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  All 110 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
   demo2.vcxproj -> C:\Users\kasem\Documents\GitHub\Graphics\programs\demo2\Release\demo2.exe

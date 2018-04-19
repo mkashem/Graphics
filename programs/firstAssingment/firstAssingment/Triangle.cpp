@@ -6,9 +6,9 @@ void createTriangle()
 {
 	// position of the vertices in the rectangle
 
-	GLfloat vertices[] = {  -0.90, -0.90, 0.0, 1.0, // bottom_left
-	                        0.90,  -0.90, 0.0, 1.0, // bottom_right
-	                        0.90, 0.90, 0.0, 1.0 ,   // top_right
+	GLfloat vertices[] = {  -1.0, -1.0, 0.0, 1.0, // bottom_left
+	                        1.0,  -1.0, 0.0, 1.0, // bottom_right
+	                        1.0, 1.0, 0.0, 1.0 ,   // top_right
 	                      
 	                     };
 
