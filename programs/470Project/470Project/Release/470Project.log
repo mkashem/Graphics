@@ -1,21 +1,11 @@
-﻿  box.cpp
-c:\users\kasem\documents\github\graphics\programs\470project\470project\box.cpp(34): warning C4838: conversion from 'double' to 'const GLfloat' requires a narrowing conversion
-c:\users\kasem\documents\github\graphics\programs\470project\470project\box.cpp(34): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
-  circle.cpp
-c:\users\kasem\documents\github\graphics\programs\470project\470project\circle.cpp(49): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  cone.cpp
-c:\users\kasem\documents\github\graphics\programs\470project\470project\cone.cpp(47): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  Plane.cpp
-  pyramid.cpp
-  TexturedPlane.cpp
-c:\users\kasem\documents\github\graphics\programs\470project\470project\texturedplane.cpp(43): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\kasem\documents\github\graphics\programs\470project\470project\texturedplane.cpp(44): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\kasem\documents\github\graphics\programs\470project\470project\texturedplane.cpp(45): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\kasem\documents\github\graphics\programs\470project\470project\texturedplane.cpp(46): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\kasem\documents\github\graphics\programs\470project\470project\texturedplane.cpp(47): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+﻿  ShadedCube.cpp
+c:\users\kasem\documents\github\graphics\programs\470project\470project\cone.h(10): warning C4005: 'NumConePoints': macro redefinition
+  c:\users\kasem\documents\github\graphics\programs\470project\470project\disk.h(8): note: see previous definition of 'NumConePoints'
+c:\users\kasem\documents\github\graphics\programs\470project\470project\cone.h(11): warning C4005: 'NumTriangles': macro redefinition
+  c:\users\kasem\documents\github\graphics\programs\470project\470project\disk.h(9): note: see previous definition of 'NumTriangles'
   Generating code
-  118 of 121 functions (97.5%) were compiled, the rest were copied from previous compilation.
-    16 functions were new in current compilation
+  2 of 129 functions ( 1.6%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   470Project.vcxproj -> C:\Users\kasem\Documents\GitHub\Graphics\programs\470Project\Release\470Project.exe

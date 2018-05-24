@@ -1,0 +1,11 @@
+﻿  main.cpp
+c:\users\kasem\documents\github\graphics\programs\bunnytwo\bunnytwo\main.cpp(325): warning C4018: '<': signed/unsigned mismatch
+c:\users\kasem\documents\github\graphics\programs\bunnytwo\bunnytwo\main.cpp(338): warning C4018: '<': signed/unsigned mismatch
+c:\users\kasem\documents\github\graphics\programs\bunnytwo\bunnytwo\main.cpp(347): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\kasem\documents\github\graphics\programs\bunnytwo\bunnytwo\main.cpp(348): warning C4018: '<': signed/unsigned mismatch
+  objloader.cpp
+c:\users\kasem\documents\github\graphics\programs\bunnytwo\bunnytwo\objloader.cpp(13): warning C4018: '<': signed/unsigned mismatch
+c:\users\kasem\documents\github\graphics\programs\bunnytwo\bunnytwo\objloader.cpp(26): warning C4018: '<': signed/unsigned mismatch
+  shader.cpp
+  Generating Code...
+  bunnyTwo.vcxproj -> C:\Users\kasem\Documents\GitHub\Graphics\programs\bunnyTwo\Debug\bunnyTwo.exe

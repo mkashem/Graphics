@@ -1,0 +1,26 @@
+﻿  box.cpp
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\box.cpp(34): warning C4838: conversion from 'double' to 'const GLfloat' requires a narrowing conversion
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\box.cpp(34): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+  circle.cpp
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\circle.cpp(49): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  cone.cpp
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\cone.cpp(47): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  hexagon.cpp
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\hexagon.cpp(15): warning C4838: conversion from 'double' to 'const GLfloat' requires a narrowing conversion
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\hexagon.cpp(15): warning C4305: 'initializing': truncation from 'double' to 'const GLfloat'
+  Plane.cpp
+  pyramid.cpp
+  sphere.cpp
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\sphere.cpp(33): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\sphere.cpp(40): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\sphere.cpp(44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\sphere.cpp(54): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\sphere.cpp(55): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  TexturedPlane.cpp
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\texturedplane.cpp(46): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\texturedplane.cpp(47): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\texturedplane.cpp(48): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\texturedplane.cpp(49): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\kasem\documents\github\graphics\programs\textureproject\textureproject\texturedplane.cpp(50): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
+  textureProject.vcxproj -> C:\Users\kasem\Documents\GitHub\Graphics\programs\textureProject\Debug\textureProject.exe

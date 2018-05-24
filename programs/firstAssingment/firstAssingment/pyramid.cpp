@@ -142,6 +142,7 @@ void renderPyramid() {
 	//glClear(GL_COLOR_BUFFER_BIT);
 
 	glDrawArrays(GL_TRIANGLES, 0, 18);
+	
 	//glDrawElements(GL_TRIANGLES, 54, GL_UNSIGNED_INT, 0);
 
 	//	glFlush();

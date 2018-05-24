@@ -19,21 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="box.cpp" />
-    <ClCompile Include="cone.cpp" />
-    <ClCompile Include="fan.cpp" />
-    <ClCompile Include="grass.cpp" />
-    <ClCompile Include="ground.cpp" />
-    <ClCompile Include="pyramid.cpp" />
-    <ClCompile Include="Scenery.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="box.h" />
     <ClInclude Include="cone.h" />
+    <ClInclude Include="disk.h" />
     <ClInclude Include="fan.h" />
     <ClInclude Include="grass.h" />
     <ClInclude Include="ground.h" />
+    <ClInclude Include="objloader.h" />
     <ClInclude Include="pyramid.h" />
+    <ClInclude Include="shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="disk.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="objloader.cpp" />
+    <ClCompile Include="shader.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

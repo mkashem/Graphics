@@ -1,0 +1,46 @@
+﻿  cone.cpp
+c:\users\kasem\documents\github\graphics\programs\firstassingment\firstassingment\cone.cpp(47): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  disk.cpp
+c:\users\kasem\documents\github\graphics\programs\firstassingment\firstassingment\disk.cpp(46): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  ground.cpp
+  main.cpp
+  pyramid.cpp
+  Triangle.cpp
+cone.obj : error LNK2001: unresolved external symbol __imp____glewEnableVertexAttribArray
+cone.obj : error LNK2001: unresolved external symbol __imp____glewBindVertexArray
+cone.obj : error LNK2001: unresolved external symbol __imp____glewVertexAttribPointer
+cone.obj : error LNK2001: unresolved external symbol __imp____glewBindBuffer
+cone.obj : error LNK2001: unresolved external symbol __imp____glewBufferSubData
+cone.obj : error LNK2001: unresolved external symbol __imp____glewBufferData
+cone.obj : error LNK2001: unresolved external symbol __imp____glewGenVertexArrays
+cone.obj : error LNK2001: unresolved external symbol __imp____glewGenBuffers
+main.obj : error LNK2001: unresolved external symbol __imp____glewUniformMatrix3fv
+main.obj : error LNK2001: unresolved external symbol __imp____glewUseProgram
+main.obj : error LNK2001: unresolved external symbol __imp____glewGetShaderiv
+main.obj : error LNK2001: unresolved external symbol __imp____glewCompileShader
+main.obj : error LNK2001: unresolved external symbol __imp____glewCreateShader
+main.obj : error LNK2001: unresolved external symbol __imp__ilEnable@4
+main.obj : error LNK2001: unresolved external symbol __imp____glewBindAttribLocation
+main.obj : error LNK2001: unresolved external symbol __imp____glewCreateProgram
+main.obj : error LNK2001: unresolved external symbol __imp____glewUniform1i
+main.obj : error LNK2001: unresolved external symbol __imp____glewGetShaderInfoLog
+main.obj : error LNK2001: unresolved external symbol __imp__ilLoadImage@4
+main.obj : error LNK2001: unresolved external symbol __imp__ilDeleteImages@8
+main.obj : error LNK2001: unresolved external symbol __imp__ilConvertImage@8
+main.obj : error LNK2001: unresolved external symbol __imp____glewGetProgramiv
+main.obj : error LNK2001: unresolved external symbol __imp__ilOriginFunc@4
+main.obj : error LNK2001: unresolved external symbol __imp____glewUniform1f
+main.obj : error LNK2001: unresolved external symbol __imp____glewGetUniformLocation
+main.obj : error LNK2001: unresolved external symbol __imp____glewAttachShader
+main.obj : error LNK2001: unresolved external symbol __imp____glewActiveTexture
+main.obj : error LNK2001: unresolved external symbol __imp____glewShaderSource
+main.obj : error LNK2001: unresolved external symbol __imp____glewUniformMatrix4fv
+main.obj : error LNK2001: unresolved external symbol __imp__ilBindImage@4
+main.obj : error LNK2001: unresolved external symbol __imp__ilGetData@0
+main.obj : error LNK2001: unresolved external symbol __imp____glewGetProgramInfoLog
+main.obj : error LNK2001: unresolved external symbol __imp__ilGetInteger@4
+main.obj : error LNK2001: unresolved external symbol __imp____glewUniform4fv
+main.obj : error LNK2001: unresolved external symbol __imp____glewLinkProgram
+main.obj : error LNK2001: unresolved external symbol __imp__glewInit@0
+main.obj : error LNK2001: unresolved external symbol __imp__ilGenImages@8
+C:\Users\kasem\Documents\GitHub\Graphics\programs\firstAssingment\Release\firstAssingment.exe : fatal error LNK1120: 37 unresolved externals

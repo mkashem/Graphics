@@ -95,6 +95,8 @@ void createDisk() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid *)sizeof(_tex));
 	glEnableVertexAttribArray(2);
+	
+	//glVertexAttribDivisor(2, 1); //every instance of position will change
 
 	/************/
 
@@ -127,8 +129,8 @@ void DiskupdateVertexNormals() {
 void renderDisk() {
 	glBindVertexArray(disk_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, disk_ebo);
-
-
+	
+	
 	glDrawElements(GL_TRIANGLES, NumIndices, GL_UNSIGNED_INT, NULL);
 	glutSwapBuffers();
 

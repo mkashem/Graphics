@@ -22,19 +22,21 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="box.cpp" />
-    <ClCompile Include="circle.cpp" />
     <ClCompile Include="cone.cpp" />
-    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="cube.cpp" />
+    <ClCompile Include="disk.cpp" />
+    <ClCompile Include="hexagon.cpp" />
     <ClCompile Include="pyramid.cpp" />
-    <ClCompile Include="TexturedPlane.cpp" />
+    <ClCompile Include="ShadedCube.cpp" />
+    <ClCompile Include="sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="box.h" />
-    <ClInclude Include="circle.h" />
     <ClInclude Include="cone.h" />
-    <ClInclude Include="Plane.h" />
+    <ClInclude Include="cube.h" />
+    <ClInclude Include="disk.h" />
+    <ClInclude Include="hexagon.h" />
     <ClInclude Include="pyramid.h" />
+    <ClInclude Include="sphere.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

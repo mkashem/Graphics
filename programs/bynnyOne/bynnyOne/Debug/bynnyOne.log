@@ -1,0 +1,4 @@
+﻿  main.cpp
+c:\users\kasem\documents\github\graphics\programs\bynnyone\bynnyone\main.cpp(103): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+c:\users\kasem\documents\github\graphics\programs\bynnyone\bynnyone\main.cpp(235): warning C4305: '+=': truncation from 'double' to 'GLfloat'
+  bynnyOne.vcxproj -> C:\Users\kasem\Documents\GitHub\Graphics\programs\bynnyOne\Debug\bynnyOne.exe

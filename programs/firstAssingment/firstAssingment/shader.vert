@@ -19,7 +19,6 @@ out Fragment
 
 void main(){
 
-
 vec3 eyespaceNormal = NormalMatrix*normal;
 vec4 eyespacePosition = view_matrix*model_matrix*vPosition;
 
@@ -38,5 +37,5 @@ vec4 ambient = AmbientProduct;
 vec4 diffuse = DiffuseProduct* (max(dot(L,N), 0.0));
 vec4 specular = SpecularProduct*( pow(max(dot(N, H), 0.0), Shininess));
     gl_Position = project_matrix*view_matrix*model_matrix*vPosition;
-	 fragment.color = ambient + diffuse + specular;
+	 fragment.color = ambient + diffuse+ specular;
 }

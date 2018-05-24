@@ -4,28 +4,41 @@
 #include "Triangle.h"
 #include "cone.h"
 #include "pyramid.h"
+#include "hexagon.h"
+#include"ground.h"
+#include "cube.h"
+#include"sphere.h"
 #include "disk.h"
 #include <math.h>
+#include <IL/il.h>
+#include <IL/ilu.h>
+#include <IL/ilut.h>
 #define GLM_FORCE_RADIANS 
 #include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 using namespace glm;
 
-
+GLuint planeTexID;
 bool change_projection;
 GLuint program;
 GLuint v, f;
+bool orthographic = false;
 GLboolean show_line = false;
+GLuint model_matrix_loc;
+GLuint view_matrix_loc;
+GLuint projection_matrix_loc;
 void setMetrix();
 mat4 model_matrix;
 mat4 view, projection_matrix;
+void Rotate(int n);
 float angle1 = 0.0;
-float angle2 = 0.0;
+float angle2 = -1.0;
 float angle3 = 0.0;
 float aspect;
 static const double kPI = 3.1415926535897932384626433832795;
 void Reshape(int width, int height);
-void Rotate(int n);
+unsigned int loadTexture(char* filename);
+
 
 // position of the vertices in the hexagon
 
@@ -33,6 +46,7 @@ void Rotate(int n);
 
 const GLchar* ReadShader(const char* filename);
 GLuint LoadShaders(char* v_shader, char* f_shader);
+
 void init(void);
 void display(void);
 void keyboard(unsigned char key, int x, int y);
@@ -154,14 +168,21 @@ void init(void) {
 	glUseProgram(program);
 	//view = glm::lookAt(vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, -100.0), vec3(0.0, 1.0, 0.0)); // this is the default camera positioin 
 	
- //view = glm::lookAt(vec3(1.5*cos(radians(tri_look)), 0.0f, 1.5*sin(radians(tri_look))), vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0)); // change the camera position 
-
-	createTriangle();
+ //view = glm::lookAt(vec3(1.5*cos(radians(angle1)), 0.0f, 1.5*sin(radians(angle1))), vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0)); // change the camera position 
+	
+	
+	
+	createGround();
+	//createTriangle();
 	createCone();
 	createDisk();
 	createPyramid();
+	createHexagon();
+	createCube();
+	createSphere();
 
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+	//glClearColor(1.0, 1.0, 1.0, 1.0);
+	glClearColor(0.5f, 0.75f, 0.85f, 1.0f);
 
 }
 
@@ -169,17 +190,23 @@ void init(void) {
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LEQUAL);
 
 	//glClear(GL_COLOR_BUFFER_BIT);
 	glUseProgram(program);
-
+	//view = glm::lookAt(vec3(0.0f, 2.0f, 8.5), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	view = glm::lookAt(vec3(1.0f, 1.0f, 6.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	//view = glm::lookAt(vec3(0.0f, 40.0f, 200.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	
+	projection_matrix = mat4(1.0f);
+	model_matrix = mat4(1.0f);
 	vec4 light_ambient(0.3, 0.3, 0.3, 1.0);
 	vec4 light_diffuse(1.0, 1.0, 1.0, 1.0);
 	vec4 light_specular(1.0, 1.0, 1.0, 1.0);
 
-	vec4 material_ambient(1.0, 1.0, 0.0, 1.0);
-	vec4 material_diffuse(1.0, 0.8, 0.0, 1.0);
-	vec4 material_specular(1.0, 0.0, 1.0, 1.0);
+	vec4 material_ambient(0.0, 1.0, 0.0, 1.0);
+	vec4 material_diffuse(0.6, 0.0, 0.8, 1.0);
+	vec4 material_specular(1.0, 1.0, 1.0, 1.0);
 
 	vec4 ambient_product = light_ambient * material_ambient;
 	vec4 diffuse_product = light_diffuse * material_diffuse;
@@ -192,50 +219,52 @@ void display(void) {
 	glUniform4fv(glGetUniformLocation(program, "LightPosition"), 1, (GLfloat*)&light_position[0]);
 	glUniform1f(glGetUniformLocation(program, "Shininess"), material_shininess);
 	
+	
+   // view = glm::lookAt(glm::vec3(0.0f, 40.0f, 1000.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	
-	view = glm::lookAt(vec3(1.0f, 0.0f, 1.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-	projection_matrix = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -8.0f, 8.0f);
-	
-	//model_matrix = mat4(1.0f);
-	//model_matrix = mat4(1, 0.5, 0, 0, 0.5, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-	//view = glm::lookAt(vec3(3.0f*cos(radians(angle_lookup)), 0.0f, 3.0f*sin(radians(angle_lookup))), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-	//projection_matrix = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -2.0f, 2.0f); // enlarge the the view 
-	//projection_matrix = glm::frustum(-2.0f, 2.0f, -2.0f, 2.0f, 0.65f, 10.0f);
-	
-	//projection_matrix = glm::perspective(radians(60.0f), aspect, 1.0f, 300.0f);
-	glUniformMatrix4fv(glGetUniformLocation(program, "view_matrix"), 1, GL_FALSE, (GLfloat*)&view[0]);
-	
-	glUniformMatrix4fv(glGetUniformLocation(program, "project_matrix"), 1, GL_FALSE, (GLfloat*)&projection_matrix[0]);
-	
-	
-	
-	mat4 _scale, _translate, _rotate;
-	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(.5f, .5f, .5));
-	_rotate = glm::rotate(mat4(1.0f), radians(270.0f - angle1), vec3(0.0f, 0.0f, 1.0f));
-	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.6f, -1.0));
-	model_matrix = _translate * _scale*_rotate;
-	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+
 	mat3 normal = mat3(view*model_matrix);
 	glUniformMatrix3fv(glGetUniformLocation(program, "NormalMatrix"), 1, GL_FALSE,
 		(GLfloat*)&normal[0]);
+	
+	
 
-	//renderCone();
+	mat4 _scale, _rotate, _translate;
+	
+	glUniformMatrix4fv(glGetUniformLocation(program, "view_matrix"), 1, GL_FALSE, (GLfloat*)&view[0]);
+	
+	glUniformMatrix4fv(glGetUniformLocation(program, "project_matrix"), 1, GL_FALSE, (GLfloat*)&projection_matrix[0]);
+	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.5f, -10.0));
+	model_matrix = _translate;
+	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+	normal = mat3(view*model_matrix);
+	glUniformMatrix3fv(glGetUniformLocation(program, "NormalMatrix"), 1, GL_FALSE,
+		(GLfloat*)&normal[0]);
+	setMetrix();
+	renderGround();
+	
 	if (show_line)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	
-	// for cone 
-	
+	if (orthographic) {
+		projection_matrix = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 4.3f, 100.0f);
+		//projection_matrix = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, 4.3f, 100.0f);
+	}
+	else {
+		projection_matrix = glm::perspective(radians(70.0f), aspect, 4.3f, 100.0f);
+	}
+		
 	
 	
 
 	model_matrix = mat4(1.0f);
-	
-	_rotate = glm::rotate(mat4(1.0f), radians(270.0f - angle2), vec3(0.0f, 1.0f, 0.0f));
-	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(.5f, .5f, .5));
+	//mat4 _rotate, _scale, _translate;
+	_rotate = glm::rotate(mat4(1.0f), radians(270.0f), vec3(0.0f, 1.0f, 0.0f));
+	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(angle2, 0.5, 0.5));
 	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0));
 	model_matrix = _translate * _scale*_rotate;
 	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
@@ -244,7 +273,7 @@ void display(void) {
 	light_diffuse = vec4(1.0, 1.0, 1.0, 1.0);
 	light_specular = vec4(1.0, 1.0, 1.0, 1.0);
 
-	material_ambient = vec4(1.0, 0.0, 0.0, 1.0);
+	material_ambient = vec4(1.0, 0.5, 0.0, 1.0);
 	material_diffuse = vec4(0.0, 0.60, 1.0, 1.0);
 	material_specular = vec4(0.80, 0.85, 0.75, 1.0);
 
@@ -256,18 +285,26 @@ void display(void) {
 	glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
 	glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, (GLfloat*)&specular_product);
 
-	normal = mat3(view*model_matrix);
+	 normal = mat3(view*model_matrix);
 	glUniformMatrix3fv(glGetUniformLocation(program, "NormalMatrix"), 1, GL_FALSE,
 		(GLfloat*)&normal[0]);
-	//----------------------------------------
 	
-	//renderPyramid();
+	setMetrix();
+	glBindTexture(GL_TEXTURE_2D, planeTexID);
+	renderPyramid();
 
 	model_matrix = mat4(1.0f);
-	
-	_rotate = glm::rotate(mat4(1.0f), radians(270.0f - angle2), vec3(0.0f, 0.0f, 1.0f));
-	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(.5f, .5f, .5));
-	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 1.0f, 0.0));
+	if (angle1 == 10) {
+		angle1 = 5;
+
+	}
+	_rotate = glm::rotate(mat4(1.0f), radians(270.0f), vec3(0.0f, 0.0f, 1.0f));
+	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(angle2/angle1, angle2/ angle1, angle2/ angle1));
+	if (angle2 ==1.0) {
+		angle2 = -1.50;
+
+	}
+	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(angle2, -angle2, angle2));
 	model_matrix = _translate * _scale*_rotate;
 	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
 
@@ -291,22 +328,21 @@ void display(void) {
 	normal = mat3(view*model_matrix);
 	glUniformMatrix3fv(glGetUniformLocation(program, "NormalMatrix"), 1, GL_FALSE,
 		(GLfloat*)&normal[0]);
+	
+	setMetrix();
 	renderDisk();
-	///-------------------
 	model_matrix = mat4(1.0f);
-
-	_rotate = glm::rotate(mat4(1.0f), radians(270.0f - angle2), vec3(0.0f, 0.0f, 1.0f));
-	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.5f, 2.5));
-	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0));
-	model_matrix = _translate * _scale*_rotate;
+	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5));
+	//_rotate = glm::rotate(mat4(1.0f), radians(180.0f-angle1), vec3(0.0f, 1.0f, 0.0f));
+	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, -2.0f, 0.0));
+	model_matrix = _translate * _scale;
 	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
-
 	light_ambient = vec4(0.5, 0.5, 0.5, 1.0);
 	light_diffuse = vec4(1.0, 1.0, 1.0, 1.0);
 	light_specular = vec4(1.0, 1.0, 1.0, 1.0);
 
 
-	material_ambient = vec4(0.33, 0.15, 0.15, 1.0);
+	material_ambient = vec4(0.33, 0.15, 0.63, 1.0);
 	material_diffuse = vec4(0.0, 0.8, 0.25, 1.0);
 	material_specular = vec4(1.0, 1.0, 1.0, 1.0);
 
@@ -317,24 +353,114 @@ void display(void) {
 	glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
 	glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
 	glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, (GLfloat*)&specular_product);
-
 	normal = mat3(view*model_matrix);
 	glUniformMatrix3fv(glGetUniformLocation(program, "NormalMatrix"), 1, GL_FALSE,
 		(GLfloat*)&normal[0]);
-	renderTriangle();
+	setMetrix();
+	
+	renderSphere();
+	//******************************
+	model_matrix = mat4(1.0f);
+	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5));
+	//_rotate = glm::rotate(mat4(1.0f), radians(180.0f-angle1), vec3(0.0f, 1.0f, 0.0f));
+	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 2.0f, 0.0));
+	model_matrix = _translate * _scale;
+	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+	light_ambient = vec4(0.5, 0.5, 0.5, 1.0);
+	light_diffuse = vec4(1.0, 1.0, 1.0, 1.0);
+	light_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+
+	material_ambient = vec4(0.33, 0.15, 0.63, 1.0);
+	material_diffuse = vec4(0.0, 0.8, 0.25, 1.0);
+	material_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+	ambient_product = light_ambient * material_ambient;
+	diffuse_product = light_diffuse * material_diffuse;
+	specular_product = light_specular * material_specular;
+
+	glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+	normal = mat3(view*model_matrix);
+	glUniformMatrix3fv(glGetUniformLocation(program, "NormalMatrix"), 1, GL_FALSE,
+		(GLfloat*)&normal[0]);
+	setMetrix();
+	renderCube();
+	//*****************************
+	//**********************************
+	model_matrix = mat4(1.0f);
+	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5));
+	//_rotate = glm::rotate(mat4(1.0f), radians(180.0f-angle1), vec3(0.0f, 1.0f, 0.0f));
+	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.0f, -1.0));
+	model_matrix = _translate * _scale;
+	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+	light_ambient = vec4(0.5, 0.5, 0.5, 1.0);
+	light_diffuse = vec4(1.0, 1.0, 1.0, 1.0);
+	light_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+
+	material_ambient = vec4(0.33, 0.15, 0.63, 1.0);
+	material_diffuse = vec4(0.0, 0.8, 0.25, 1.0);
+	material_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+	ambient_product = light_ambient * material_ambient;
+	diffuse_product = light_diffuse * material_diffuse;
+	specular_product = light_specular * material_specular;
+
+	glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+	normal = mat3(view*model_matrix);
+	glUniformMatrix3fv(glGetUniformLocation(program, "NormalMatrix"), 1, GL_FALSE,
+		(GLfloat*)&normal[0]);
+	setMetrix();
+	renderHexagon();
+	
+	///*********************cone*******************************************************************
+	model_matrix = mat4(1.0f);
+	_scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5));
+	//_rotate = glm::rotate(mat4(1.0f), radians(180.0f-angle1), vec3(0.0f, 1.0f, 0.0f));
+	_translate = glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, -2.0f, 0.0));
+	model_matrix = _translate * _scale;
+	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
+	light_ambient = vec4(0.1, 0.1, 0.1, 1.0);
+	light_diffuse = vec4(1.0, 1.0, 1.0, 1.0);
+	light_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+
+	material_ambient = vec4(0.3, 0.3, 0.3, 1.0);
+	material_diffuse = vec4(0.0, 0.8, 0.25, 1.0);
+	material_specular = vec4(1.0, 1.0, 1.0, 1.0);
+
+	ambient_product = light_ambient * material_ambient;
+	diffuse_product = light_diffuse * material_diffuse;
+	specular_product = light_specular * material_specular;
+
+	glUniform4fv(glGetUniformLocation(program, "AmbientProduct"), 1, (GLfloat*)&ambient_product);
+	glUniform4fv(glGetUniformLocation(program, "DiffuseProduct"), 1, (GLfloat*)&diffuse_product);
+	glUniform4fv(glGetUniformLocation(program, "SpecularProduct"), 1, (GLfloat*)&specular_product);
+	normal = mat3(view*model_matrix);
+	glUniformMatrix3fv(glGetUniformLocation(program, "NormalMatrix"), 1, GL_FALSE,
+		(GLfloat*)&normal[0]);
+	setMetrix();
+	renderCone();
+	
 	///-------------
+glutSwapBuffers();
 
-	glFlush();
+	//glFlush();
 }
-/*
-void setMetrix() {
 
-	projection_matrix = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -8.0f, 8.0f);
+void setMetrix() {
+	//projection_matrix = perspective(radians(60.0f), aspect, 1.0f, 3000.0f);
+	//projection_matrix = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -9.0f, 9.0f);
+	//projection_matrix = glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f, -11.0f, 11.0f);
 	glUniformMatrix4fv(glGetUniformLocation(program, "project_matrix"), 1, GL_FALSE, (GLfloat*)&projection_matrix[0]);
 	glUniformMatrix4fv(glGetUniformLocation(program, "view_matrix"), 1, GL_FALSE, (GLfloat*)&view[0]);
 	glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, (GLfloat*)&model_matrix[0]);
 }
-*/
+
 /*******************************************************************************************************************/
 
 void keyboard(unsigned char key, int x, int y) {
@@ -346,6 +472,8 @@ void keyboard(unsigned char key, int x, int y) {
 	case 'L':
 		show_line = !show_line;
 		break;
+	case 'o':case 'O':
+		orthographic = !orthographic;
 
 	}
 	glutPostRedisplay();
@@ -354,7 +482,7 @@ void keyboard(unsigned char key, int x, int y) {
 /*********************************************************************************************/
 void Rotate(int n)  //the "glutTimerFunc"
 {
-
+	
 	switch (n) {
 	case 1:
 		angle1 += 5;
@@ -362,19 +490,25 @@ void Rotate(int n)  //the "glutTimerFunc"
 		glutTimerFunc(100, Rotate, 1);
 		break;
 	case 2:
-		angle2 += 5;
+		angle2 += 0.125/2;
 		glutPostRedisplay();
-		glutTimerFunc(100, Rotate, 2);
+		glutTimerFunc(150, Rotate, 2);
+		break;
+	case 3:
+		angle3 += 5;
+		glutPostRedisplay();
+		glutTimerFunc(100, Rotate, 3);
 		break;
 	}
-
+	
 }
 /*******************************************************************************************************************/
 int main(int argc, char** argv) {
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitWindowSize(512, 512);
+	glutInitWindowSize(1024, 1024);
+	//glutInitWindowSize(512, 512);
 	glutInitWindowPosition(0, 0);
 
 	glutCreateWindow("Drawing objects");
@@ -388,7 +522,8 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutTimerFunc(100, Rotate, 1);
-	glutTimerFunc(100, Rotate, 2);
+	glutTimerFunc(150, Rotate, 2);
+	glutTimerFunc(100, Rotate, 3);
 	glutMainLoop();
 }
 

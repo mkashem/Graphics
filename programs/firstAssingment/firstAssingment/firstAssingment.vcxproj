@@ -119,15 +119,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cone.cpp" />
+    <ClCompile Include="cube.cpp" />
     <ClCompile Include="disk.cpp" />
+    <ClCompile Include="ground.cpp" />
+    <ClCompile Include="hexagon.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pyramid.cpp" />
+    <ClCompile Include="sphere.cpp" />
     <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cone.h" />
+    <ClInclude Include="cube.h" />
     <ClInclude Include="disk.h" />
+    <ClInclude Include="ground.h" />
+    <ClInclude Include="hexagon.h" />
     <ClInclude Include="pyramid.h" />
+    <ClInclude Include="sphere.h" />
     <ClInclude Include="Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

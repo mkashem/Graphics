@@ -1,2 +1,4 @@
-﻿  Scenery.cpp
+﻿  main.cpp
+c:\users\kasem\documents\github\graphics\programs\demo3\demo3\main.cpp(103): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+c:\users\kasem\documents\github\graphics\programs\demo3\demo3\main.cpp(235): warning C4305: '+=': truncation from 'double' to 'GLfloat'
   demo3.vcxproj -> C:\Users\kasem\Documents\GitHub\Graphics\programs\demo3\Debug\demo3.exe

@@ -1,0 +1,4 @@
+﻿  objloader.cpp
+c:\users\kasem\documents\github\graphics\programs\bunnythree\bunnythree\objloader.cpp(13): warning C4018: '<': signed/unsigned mismatch
+c:\users\kasem\documents\github\graphics\programs\bunnythree\bunnythree\objloader.cpp(26): warning C4018: '<': signed/unsigned mismatch
+  bunnyThree.vcxproj -> C:\Users\kasem\Documents\GitHub\Graphics\programs\bunnyThree\Debug\bunnyThree.exe
